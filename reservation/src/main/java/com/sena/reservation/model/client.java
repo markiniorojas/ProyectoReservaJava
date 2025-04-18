@@ -20,8 +20,8 @@ public class client {
 
     //Llave foranea de la tabla persona
     @OneToOne
-    @JoinColumn(name = "personId", referencedColumnName = "id_person")
-    private person person; // Relación uno a uno con la entidad Person
+    @JoinColumn(name = "id_person", referencedColumnName = "id_person", nullable = false)
+    private person person;
 
     @Column(name = "userName", length = 20)
     private String userName;
@@ -82,8 +82,5 @@ public class client {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    
-    
 
 }
