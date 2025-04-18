@@ -28,8 +28,8 @@ public class person {
     @Column(name = "phone", length = 10)
     private int phone;
 
-    @Column(name = "Age", length = 2)
-    private int Age;
+    @Column(name = "age", length = 2)
+    private int age;
 
     public person() {
     }
@@ -39,7 +39,7 @@ public class person {
         this.name = name;
         this.last_name = last_name;
         this.phone = phone;
-        Age = age;
+        this.age = age;
     }
 
     public int getId_person() {
@@ -75,11 +75,11 @@ public class person {
     }
 
     public int getAge() {
-        return Age;
+        return age;
     }
 
     public void setAge(int age) {
-        Age = age;
+        this.age = age;
     }
 
     
