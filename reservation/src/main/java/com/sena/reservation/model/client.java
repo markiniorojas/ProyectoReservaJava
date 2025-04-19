@@ -32,6 +32,9 @@ public class client {
     @Column(name = "password", length = 20)
     private String password;
 
+    @Column(name = "active", nullable = false)
+    private boolean active = true;
+
     public client() {
     }
 
@@ -41,6 +44,7 @@ public class client {
         this.userName = userName;
         this.email = email;
         this.password = password;
+        this.active = true;
     }
 
     public int getId_client() {
@@ -81,6 +85,14 @@ public class client {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
 }

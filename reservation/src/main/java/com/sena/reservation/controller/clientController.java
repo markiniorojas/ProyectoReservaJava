@@ -3,6 +3,8 @@ package com.sena.reservation.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sena.reservation.DTO.ClientDtos;
+import com.sena.reservation.DTO.responseDTO;
 import com.sena.reservation.model.client;
 import com.sena.reservation.service.clientServices;
 
@@ -21,6 +23,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("api/v1/client")
 public class clientController {  
 
+    /*
+     * Get: obtener datos o consultar
+     * Post: registrar y crear datos
+     * Put: Actualizar datos de todo el objeto
+     * Patch: Actualizacion parcial
+     * Delete: Eliminar objetos
+     */
+
     @Autowired
     private clientServices clientService;
 
@@ -30,14 +40,22 @@ public class clientController {
         return new ResponseEntity<Object>(ListClient,HttpStatus.OK);
     }
 
+    @GetMapping("/filter/{userName}")
+    public ResponseEntity<Object> filterForUserName(@PathVariable String userName) {
+        var ListClient = clientService.filterForUserName(userName);
+        return new ResponseEntity<Object>(ListClient,HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Object> findByIdClient(@PathVariable int id) {
         var client = clientService.findByIdClient(id);
         return new ResponseEntity<>(client,HttpStatus.OK);          
     }
 
+    
+
     @PostMapping("/")
-    public ResponseEntity<String> save(@RequestBody client client){
+    public ResponseEntity<String> save(@RequestBody ClientDtos client){
         boolean saved = clientService.save(client);
         if (saved) {
             return new ResponseEntity<>("Registro Ok", HttpStatus.CREATED);
@@ -47,14 +65,20 @@ public class clientController {
     }
 
     @PutMapping("/{id}")
-    public String update(@PathVariable int id, @RequestBody client client){
-        clientService.update(id,client);
+    public String update(@RequestBody ClientDtos client){
+        clientService.update(client);
         return "Actualizacion Ok";
     }
     
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable int id){
-        clientService.delete(id);
-        return "Eliminacion Ok";
+    public ResponseEntity<Object> delete(@PathVariable int id){
+        responseDTO response = clientService.delete(id);
+        return new ResponseEntity<Object>(response.getMessage(), response.getStatus());
+    }
+
+    @PutMapping("/restore/{id}")
+    public ResponseEntity<Object> restore(@PathVariable int id){
+    responseDTO response = clientService.restore(id);
+    return new ResponseEntity<>(response.getMessage(), response.getStatus());
     }
 }
