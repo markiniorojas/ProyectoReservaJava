@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
-@RequestMapping("/api/reservation")
+@RequestMapping("/api/v1/reservation")
 public class reservationController {
 
 

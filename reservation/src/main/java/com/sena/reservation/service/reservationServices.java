@@ -43,6 +43,7 @@ public class reservationServices {
                 reservation.get().setResevationdate(reservationUpdate.getResevationdate());
                 reservation.get().setReservationtime(reservationUpdate.getReservationtime());
                 reservation.get().setQuantityPersons(reservationUpdate.getQuantityPersons());
+                reservation.get().setReservationStatus(reservationUpdate.getReservationStatus()); // Añadido
                 reservationData.save(reservation.get());
             }
         }

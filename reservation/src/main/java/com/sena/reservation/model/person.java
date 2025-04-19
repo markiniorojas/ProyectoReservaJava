@@ -31,6 +31,10 @@ public class person {
     @Column(name = "age", length = 2)
     private int age;
 
+    // Nuevo campo para soft delete
+    @Column(name = "active", nullable = false)
+    private boolean active = true;
+
     public person() {
     }
 
@@ -40,6 +44,7 @@ public class person {
         this.last_name = last_name;
         this.phone = phone;
         this.age = age;
+        this.active = true;
     }
 
     public int getId_person() {
@@ -80,6 +85,14 @@ public class person {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     
