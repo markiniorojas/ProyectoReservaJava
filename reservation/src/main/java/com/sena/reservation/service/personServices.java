@@ -31,8 +31,9 @@ public class personServices {
     }
 
     public Optional<person> findByIdPerson(int id){
-        return PersonData.findById(id);
+        return PersonData.findActiveById(id);
     }
+
 
     public void save(PersonDtos person){
         PersonData.save(converRegisterToPerson(person));
