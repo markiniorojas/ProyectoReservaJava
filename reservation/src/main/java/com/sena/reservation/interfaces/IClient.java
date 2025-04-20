@@ -17,16 +17,16 @@ public interface IClient extends JpaRepository<client, Integer> {
     // UPDATE
     // DELETE
     // Por defecto
-    @Query("SELECT c FROM client c WHERE c.Username LIKE %?1%")
+    @Query("SELECT c FROM client c WHERE c.user_name LIKE %?1%")
     List<client> filterForUserName(String filter);
 
     //método para encontrar todas las personas activas
     @Query("SELECT c FROM client c WHERE c.active = true")
     List<client> findAllActive();
 
-    // Método para encontrar una persona activa por ID
-    @Query("SELECT c FROM client c WHERE c.id_person = ?1 AND c.active = true")
-    Optional<client> findActiveById(int id);
+    // // Método para encontrar una persona activa por ID
+     @Query("SELECT c FROM client c WHERE c.id_client = ?1 AND c.active = true")
+     Optional<client> findActiveById(int id);
 
     @Query("UPDATE client c SET c.active = true WHERE c.id_client = ?1")
     void restore(int id);

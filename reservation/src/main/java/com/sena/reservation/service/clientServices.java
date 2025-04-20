@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.sena.reservation.DTO.ClientDtos;
-import com.sena.reservation.DTO.PersonDtos;
 import com.sena.reservation.DTO.responseDTO;
 import com.sena.reservation.interfaces.IClient;
 import com.sena.reservation.interfaces.IPerson; 
@@ -21,52 +20,44 @@ public class clientServices {
      * @Autowired = incluye la conexion de la interface
      */
      @Autowired
-     private IClient clientData;
+     private IClient ClientData;
      
      @Autowired
-     private IPerson personData; // 
+     private IPerson PersonData; // 
 
      public List<client> findAllClient(){
-         return clientData.findAll();
+         return ClientData.findAllActive();
      }
 
      public List<client> filterForUserName(String filter){
-        return clientData.filterForUserName(filter);
+        return ClientData.filterForUserName(filter);
     }
 
      public Optional<client> findByIdClient(int id){
-         return clientData.findById(id);
+         return ClientData.findActiveById(id);
      }
 
      // Método para verificar si una persona existe por ID
      public boolean existsPersonById(int personId) {
-         return personData.existsById(personId);
+         return PersonData.existsById(personId);
      }
 
      // Método modificado para guardar, verificando primero si existe la persona
-     public boolean save(ClientDtos client){
-         // Verificar si la persona existe
-         int personId = ClientDtos.getId_person(); 
-         if (existsPersonById(personId)) {
-            Optional<person> personEntity = personData.findById(personId);
-            if (personEntity.isPresent()) {
-                // Crear una nueva entidad cliente
-                client newClient = new client(
-                    0,
-                    personEntity.get(),
-                    ClientDtos.getUserName(),
-                    ClientDtos.getEmail(),
-                    ClientDtos.getPassword()
-                );
-                clientData.save(newClient);
+     public boolean save(ClientDtos clientDto){
+        // Verificar si la persona existe
+        int personId = clientDto.getId_person(); 
+        if (existsPersonById(personId)) {
+            client newClient = converRegisterToClient(clientDto);
+            if (newClient != null) {
+                ClientData.save(newClient);
                 return true;
             }
-         }
-         return false; 
-     }
+        }
+        return false; 
+    }
 
      public client converRegisterToClient(ClientDtos clientDto){ 
-        Optional<person> personEntity = personData.findById(clientDto.getId_person());
+        Optional<person> personEntity = PersonData.findById(clientDto.getId_person());
         
         // Si la persona existe, crear y devolver el cliente
         if(personEntity.isPresent()) {
@@ -78,26 +69,37 @@ public class clientServices {
                 clientDto.getPassword()
             );
         }
-        
         // Si la persona no existe, retornar null
         return null;
     }
-     public void update(ClientDtos clientUpdate){
-         var client = findByIdClient(clientUpdate.getId_client());
-         if(client.isPresent()){
-             client.get().setUserName(clientUpdate.getUserName());
-             client.get().setEmail(clientUpdate.getEmail());
-             client.get().setPassword(clientUpdate.getPassword());
-             clientData.save(client.get());
-         }
-     }
+    
+    public void update(ClientDtos ClientUpdate){
+        var existingClient = findByIdClient(ClientUpdate.getId_client());
+        if(existingClient.isPresent()){
+            var client = existingClient.get();
+            // Volver a cargar la persona desde la BD
+            Optional<person> personEntity = PersonData.findById(ClientUpdate.getId_person());
+            if(personEntity.isEmpty()) {
+                // Si no existe, no actualices
+                throw new RuntimeException("La persona con ID " + ClientUpdate.getId_person() + " no existe.");
+            }
+            // Asignar persona y los demás datos
+            client.setPerson(personEntity.get());
+            client.setUser_name(ClientUpdate.getUserName());
+            client.setEmail(ClientUpdate.getEmail());
+            client.setPassword(ClientUpdate.getPassword());
+            
+            ClientData.save(client); 
+        }
+    }
+    
 
      public responseDTO delete(int id){
          var client = findByIdClient(id);
          responseDTO response = new responseDTO();  
          if(client.isPresent()){
             client.get().setActive(false);
-            clientData.save(client.get());
+            ClientData.save(client.get());
             
             response.setStatus(HttpStatus.OK);
             response.setMessage("Cliente eliminado con éxito");
@@ -111,7 +113,7 @@ public class clientServices {
 
      public responseDTO restore(int id) {
          // Buscamos el cliente por ID (activa o inactiva)
-         var client = clientData.findById(id);
+         var client = ClientData.findById(id);
          responseDTO response = new responseDTO();
          
          if (client.isPresent()) {
@@ -119,11 +121,10 @@ public class clientServices {
              if (!client.get().isActive()) {
                  // La reactivamos
                  client.get().setActive(true);
-                 clientData.save(client.get());
+                 ClientData.save(client.get());
                  
                  response.setStatus(HttpStatus.OK);
                  response.setMessage("Cliente restaurado con éxito");
-                 return response;
              } else {
                  response.setStatus(HttpStatus.BAD_REQUEST);
                  response.setMessage("El cliente ya está activo");  
@@ -131,7 +132,7 @@ public class clientServices {
          } else {
              response.setStatus(HttpStatus.NOT_FOUND);
              response.setMessage("Cliente no encontrado");
-             return response;
          }
+         return response;
      }
 }

@@ -23,8 +23,8 @@ public class client {
     @JoinColumn(name = "id_person", referencedColumnName = "id_person", nullable = false)
     private person person;
 
-    @Column(name = "userName", length = 20)
-    private String userName;
+    @Column(name = "user_name", length = 20)
+    private String user_name;
 
     @Column(name = "email", length = 30)
     private String email;
@@ -38,10 +38,10 @@ public class client {
     public client() {
     }
 
-    public client(int id_client, person person, String userName, String email, String password) {
+    public client(int id_client, person person, String user_name, String email, String password) {
         this.id_client = id_client;
         this.person = person;
-        this.userName = userName;
+        this.user_name = user_name;
         this.email = email;
         this.password = password;
         this.active = true;
@@ -63,12 +63,12 @@ public class client {
         this.person = person;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUser_name() {
+        return user_name;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
     }
 
     public String getEmail() {

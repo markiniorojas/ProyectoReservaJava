@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sena.reservation.DTO.ClientDtos;
 import com.sena.reservation.DTO.responseDTO;
-import com.sena.reservation.model.client;
 import com.sena.reservation.service.clientServices;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,23 +31,23 @@ public class clientController {
      */
 
     @Autowired
-    private clientServices clientService;
+    private clientServices ClientService;
 
     @GetMapping("/")
     public ResponseEntity<Object> findAllClient(){
-        var ListClient = clientService.findAllClient();
+        var ListClient = ClientService.findAllClient();
         return new ResponseEntity<Object>(ListClient,HttpStatus.OK);
     }
 
     @GetMapping("/filter/{userName}")
     public ResponseEntity<Object> filterForUserName(@PathVariable String userName) {
-        var ListClient = clientService.filterForUserName(userName);
+        var ListClient = ClientService.filterForUserName(userName);
         return new ResponseEntity<Object>(ListClient,HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> findByIdClient(@PathVariable int id) {
-        var client = clientService.findByIdClient(id);
+        var client = ClientService.findByIdClient(id);
         return new ResponseEntity<>(client,HttpStatus.OK);          
     }
 
@@ -56,29 +55,29 @@ public class clientController {
 
     @PostMapping("/")
     public ResponseEntity<String> save(@RequestBody ClientDtos client){
-        boolean saved = clientService.save(client);
+        boolean saved = ClientService.save(client);
         if (saved) {
             return new ResponseEntity<>("Registro Ok", HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>("Error: La persona con ID " + client.getPerson().getId_person() + " no existe", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error: La persona con ID " + client.getId_person() + " no existe", HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/{id}")
     public String update(@RequestBody ClientDtos client){
-        clientService.update(client);
+        ClientService.update(client);
         return "Actualizacion Ok";
     }
     
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable int id){
-        responseDTO response = clientService.delete(id);
+        responseDTO response = ClientService.delete(id);
         return new ResponseEntity<Object>(response.getMessage(), response.getStatus());
     }
 
     @PutMapping("/restore/{id}")
     public ResponseEntity<Object> restore(@PathVariable int id){
-    responseDTO response = clientService.restore(id);
+    responseDTO response = ClientService.restore(id);
     return new ResponseEntity<>(response.getMessage(), response.getStatus());
     }
 }

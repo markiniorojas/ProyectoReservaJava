@@ -3,9 +3,9 @@ package com.sena.reservation.DTO;
 public class ClientDtos {
     private int id_client;
     private int id_person;
-    private String UserName;
-    private String Email;
-    private String Password;
+    private String userName;
+    private String email;
+    private String password;
 
     // Constructor vacío requerido para la deserialización
     public ClientDtos() {
@@ -15,9 +15,9 @@ public class ClientDtos {
     public ClientDtos(int id_client, int id_person, String userName, String email, String password) {
         this.id_client = id_client;
         this.id_person = id_person;
-        this.UserName = userName;
-        this.Email = email;
-        this.Password = password;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
     }
 
     // Getters y setters
@@ -38,26 +38,26 @@ public class ClientDtos {
     }
 
     public String getUserName() {
-        return UserName;
+        return userName;
     }
 
     public void setUserName(String userName) {
-        this.UserName = userName;
+        this.userName = userName;
     }
 
     public String getEmail() {
-        return Email;
+        return email;
     }
 
     public void setEmail(String email) {
-        this.Email = email;
+        this.email = email;
     }
 
     public String getPassword() {
-        return Password;
+        return password;
     }
 
     public void setPassword(String password) {
-        this.Password = password;
+        this.password = password;
     }
 }
