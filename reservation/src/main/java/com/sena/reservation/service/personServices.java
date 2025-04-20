@@ -31,8 +31,9 @@ public class personServices {
     }
 
     public Optional<person> findByIdPerson(int id){
-        return PersonData.findById(id);
+        return PersonData.findActiveById(id);
     }
+
 
     public void save(PersonDtos person){
         PersonData.save(converRegisterToPerson(person));
@@ -77,7 +78,6 @@ public class personServices {
         }
     }
 
-    // En personServices
     public responseDTO restore(int id) {
         // Buscamos la persona por ID (activa o inactiva)
         var person = PersonData.findById(id);

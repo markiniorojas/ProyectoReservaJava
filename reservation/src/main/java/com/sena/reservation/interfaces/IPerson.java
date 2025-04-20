@@ -21,7 +21,7 @@ public interface IPerson extends JpaRepository<person, Integer>{
     @Query("SELECT p FROM person p WHERE p.name LIKE %?1%")
     List<person> filterForName(String filter);
 
-    // Nuevo método para encontrar todas las personas activas
+    //método para encontrar todas las personas activas
     @Query("SELECT p FROM person p WHERE p.active = true")
     List<person> findAllActive();
 

@@ -31,7 +31,7 @@ public class person {
     @Column(name = "age", length = 2)
     private int age;
 
-    // Nuevo campo para soft delete
+    //campo para el eliminador logico
     @Column(name = "active", nullable = false)
     private boolean active = true;
 
