@@ -3,7 +3,6 @@ package com.sena.reservation.model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,7 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 
 @Entity(name = "reservation")
 public class reservation {
@@ -26,12 +25,12 @@ public class reservation {
     private int id_reservation;
 
     //Llave foranea de la tabla persona
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "id_client", referencedColumnName = "id_client")
     private client client;
 
-    @Column(name = "resevationdate")
-    private LocalDate resevationdate;
+    @Column(name = "reservationdate")
+    private LocalDate reservationdate;
 
     @Column(name = "reservationtime")
     private LocalTime reservationtime;
@@ -46,12 +45,11 @@ public class reservation {
     public reservation() {
     }
 
-    public reservation(int id_reservation, com.sena.reservation.model.client client, LocalDate resevationdate,
-            LocalTime reservationtime, int quantityPersons,
-            com.sena.reservation.model.reservationStatus reservationStatus) {
+    public reservation(int id_reservation, client client, LocalDate reservationdate,
+            LocalTime reservationtime, int quantityPersons,reservationStatus reservationStatus) {
         this.id_reservation = id_reservation;
         this.client = client;
-        this.resevationdate = resevationdate;
+        this.reservationdate = reservationdate;
         this.reservationtime = reservationtime;
         this.quantityPersons = quantityPersons;
         this.reservationStatus = reservationStatus;
@@ -73,12 +71,12 @@ public class reservation {
         this.client = client;
     }
 
-    public LocalDate getResevationdate() {
-        return resevationdate;
+    public LocalDate getReservationdate() {
+        return reservationdate;
     }
 
-    public void setResevationdate(LocalDate resevationdate) {
-        this.resevationdate = resevationdate;
+    public void setReservationdate(LocalDate reservationdate) {
+        this.reservationdate = reservationdate;
     }
 
     public LocalTime getReservationtime() {
