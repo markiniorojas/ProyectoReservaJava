@@ -3,14 +3,14 @@ package com.sena.reservation.DTO;
 public class billDtos {
     private int id_bill;
     private int id_reservation;
-    private int id_promotion;
+    private Integer id_promotion;
     private double total_price;
     private String billStatus;
 
     public billDtos() {
     }
 
-    public billDtos(int id_bill, int id_reservation, int id_promotion, int total_price, String billStatus) {
+    public billDtos(int id_bill, int id_reservation, Integer id_promotion, int total_price, String billStatus) {
         this.id_bill = id_bill;
         this.id_reservation = id_reservation;
         this.id_promotion = id_promotion;
@@ -34,7 +34,7 @@ public class billDtos {
         this.id_reservation = id_reservation;
     }
 
-    public int getId_promotion() {
+    public Integer getId_promotion() {
         return id_promotion;
     }
 

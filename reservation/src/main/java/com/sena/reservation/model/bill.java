@@ -23,8 +23,8 @@ public class bill {
     @JoinColumn(name = "id_reservation", referencedColumnName = "id_reservation", nullable = false)
     private reservation reservation;
     
-    @Column(name = "promotion_id")
-    private int promotionId;
+    @Column(name = "promotion_id", nullable = true)
+    private Integer promotionId;
 
     @Column(name = "total_price")
     private double total_price;
@@ -36,7 +36,7 @@ public class bill {
     public bill() {
     }
 
-    public bill(int id_bill, reservation reservation, int promotionId, double total_price,
+    public bill(int id_bill, reservation reservation, Integer promotionId, double total_price,
             com.sena.reservation.model.billStatus billStatus) {
         this.id_bill = id_bill;
         this.reservation = reservation;
@@ -61,7 +61,7 @@ public class bill {
         this.reservation = reservation;
     }
 
-    public int getPromotionId() {
+    public Integer getPromotionId() {
         return promotionId;
     }
 
