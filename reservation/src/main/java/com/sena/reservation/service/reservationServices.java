@@ -28,7 +28,7 @@ public class reservationServices {
 
     // Obtener todas las reservas
     public List<reservation> findAllReservations() {
-        return reservationData.findAll();
+        return reservationData.findAll();   
     }
 
     // Obtener reservas por estado

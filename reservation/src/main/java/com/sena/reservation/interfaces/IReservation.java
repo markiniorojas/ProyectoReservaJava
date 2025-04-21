@@ -27,7 +27,7 @@ public interface IReservation extends JpaRepository<reservation, Integer> {
     @Query("SELECT r FROM reservation r WHERE r.reservationStatus = ?1 AND r.client.id_client = ?2")
     List<reservation> findByStatusAndClient(reservationStatus status, int clientId);
 
-    // Buscar reserva específica con el id si está en estado confirmado
-    @Query("SELECT r FROM reservation r WHERE r.id = ?1 AND r.reservationStatus = 'CONFIRMED'")
+    // Corregido: cambio de r.id a r.id_reservation
+    @Query("SELECT r FROM reservation r WHERE r.id_reservation = ?1 AND r.reservationStatus = 'CONFIRMED'")
     Optional<reservation> findConfirmedById(int id);
 }
