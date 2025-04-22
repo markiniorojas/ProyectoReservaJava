@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,8 +28,11 @@ public class reservationServices {
     private IClient clientData; // Para verificar si el cliente existe
 
     // Obtener todas las reservas
-    public List<reservation> findAllReservations() {
-        return reservationData.findAll();   
+    public List<reservationDtos> findAllReservations() {
+        return reservationData.findAll()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     // Obtener reservas por estado
@@ -37,8 +41,9 @@ public class reservationServices {
     }
 
     // Obtener una reserva por ID
-    public Optional<reservation> findByIdReservation(int id) {
-        return reservationData.findById(id);
+    public Optional<reservationDtos> findByIdReservation(int id) {
+        return reservationData.findById(id)
+                .map(this::convertToDto);
     }
 
     // Método para verificar si un cliente existe
@@ -60,76 +65,97 @@ public class reservationServices {
     }
 
     // Convertir DTO a entidad reservation
-        // Convertir DTO a entidad reservation
-public reservation converRegisterToReservation(reservationDtos reservationDto) { 
-    Optional<client> clientEntity = clientData.findById(reservationDto.getId_client());
-    
-    // Si el cliente existe, crear y devolver la reserva
-    if(clientEntity.isPresent()) {
-        try {
-            LocalDate date = LocalDate.parse(reservationDto.getReservationdate());
-            LocalTime time = LocalTime.parse(reservationDto.getReservationtime());
-            
-            // Convertir el String a enum reservationStatus
-            reservationStatus status = reservationStatus.valueOf(reservationDto.getReservationStatus().toUpperCase());
-            
-            return new reservation(
-                0, // ID auto-generado
-                clientEntity.get(),
-                date,
-                time,
-                reservationDto.getQuantityPersons(),
-                status
-            );
-        } catch (Exception e) {
-            throw new RuntimeException("Error al convertir los datos: " + e.getMessage());
+    public reservation converRegisterToReservation(reservationDtos reservationDto) {
+        // Buscar el cliente por ID
+        Optional<client> clientOptional = clientData.findById(reservationDto.getId_client());
+        if (!clientOptional.isPresent()) {
+            throw new RuntimeException("El cliente con ID " + reservationDto.getId_client() + " no existe");
         }
+        
+        client Client = clientOptional.get();
+        
+        // Convertir strings a LocalDate y LocalTime
+        LocalDate date = LocalDate.parse(reservationDto.getReservationdate());
+        LocalTime time = LocalTime.parse(reservationDto.getReservationtime());
+        
+        // Convertir string a enum reservationStatus
+        reservationStatus status = reservationStatus.valueOf(reservationDto.getReservationStatus().toUpperCase());
+        
+        // Crear una nueva reservación con el constructor en el orden correcto
+        return new reservation(
+            0, // Id autogenerado
+            Client,
+            date,
+            time,
+            reservationDto.getQuantityPersons(),
+            status
+        );
     }
-    // Si el cliente no existe, retornar null
-    return null;
+
+    public reservationDtos convertToDto(reservation reservation) {
+        reservationDtos dto = new reservationDtos();
+        dto.setId_reservation(reservation.getId_reservation());
+    
+        // Validamos si hay cliente asociado
+        if (reservation.getClient() != null) {
+            dto.setId_client(reservation.getClient().getId_client());
+        } else {
+            // Si no hay cliente, dejamos el id_client en 0
+            dto.setId_client(0);
+        }
+    
+        dto.setQuantityPersons(reservation.getQuantityPersons());
+        
+        // Convertir LocalDate y LocalTime a String
+        dto.setReservationdate(reservation.getReservationdate().toString());
+        dto.setReservationtime(reservation.getReservationtime().toString());
+        
+        // Convertir enum a String
+        dto.setReservationStatus(reservation.getReservationStatus().toString());
+    
+        return dto;
     }
 
     // Actualizar una reserva
-public void update(int id, reservationDtos reservationDto) {
-    var existingReservation = findByIdReservation(id);
-    if (existingReservation.isPresent()) {
-        var reservation = existingReservation.get();
+    public void update(int id, reservationDtos reservationDto) {
+        var existingReservation = reservationData.findById(id);
+        if (existingReservation.isPresent()) {
+            var reservation = existingReservation.get();
 
-        int clientId = reservationDto.getId_client();
-        Optional<client> clientEntity = clientData.findById(clientId);
+            int clientId = reservationDto.getId_client();
+            Optional<client> clientEntity = clientData.findById(clientId);
 
-        if (clientEntity.isEmpty()) {
-            throw new RuntimeException("El cliente con ID " + clientId + " no existe.");
+            if (clientEntity.isEmpty()) {
+                throw new RuntimeException("El cliente con ID " + clientId + " no existe.");
+            }
+
+            try {
+                // Convertir String a LocalDate y LocalTime
+                LocalDate date = LocalDate.parse(reservationDto.getReservationdate());
+                LocalTime time = LocalTime.parse(reservationDto.getReservationtime());
+                
+                // Convertir String a enum reservationStatus
+                reservationStatus status = reservationStatus.valueOf(reservationDto.getReservationStatus().toUpperCase());
+
+                // Si el cliente existe, actualizamos los datos de la reserva
+                reservation.setClient(clientEntity.get());
+                reservation.setReservationdate(date);
+                reservation.setReservationtime(time);
+                reservation.setQuantityPersons(reservationDto.getQuantityPersons());
+                reservation.setReservationStatus(status);
+
+                reservationData.save(reservation);
+            } catch (Exception e) {
+                throw new RuntimeException("Error al actualizar la reserva: " + e.getMessage());
+            }
+        } else {
+            throw new RuntimeException("La reserva con ID " + id + " no existe.");
         }
-
-        try {
-            // Convertir String a LocalDate y LocalTime
-            LocalDate date = LocalDate.parse(reservationDto.getReservationdate());
-            LocalTime time = LocalTime.parse(reservationDto.getReservationtime());
-            
-            // Convertir String a enum reservationStatus
-            reservationStatus status = reservationStatus.valueOf(reservationDto.getReservationStatus().toUpperCase());
-
-            // Si el cliente existe, actualizamos los datos de la reserva
-            reservation.setClient(clientEntity.get());
-            reservation.setReservationdate(date);
-            reservation.setReservationtime(time);
-            reservation.setQuantityPersons(reservationDto.getQuantityPersons());
-            reservation.setReservationStatus(status);
-
-            reservationData.save(reservation);
-        } catch (Exception e) {
-            throw new RuntimeException("Error al actualizar la reserva: " + e.getMessage());
-        }
-    } else {
-        throw new RuntimeException("La reserva con ID " + id + " no existe.");
     }
-}
     
-
-    // Eliminar una reserva (en este caso, marcamos como eliminada)
+    // Eliminar una reserva
     public responseDTO delete(int id) {
-        var reservation = findByIdReservation(id);
+        var reservation = reservationData.findById(id);
         responseDTO response = new responseDTO();  
         if(reservation.isPresent()){
             reservationData.delete(reservation.get());
